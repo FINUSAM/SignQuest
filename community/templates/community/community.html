@@ -2,10 +2,69 @@
 
 {% block title %} Community Page {% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+    .scrollable-div {
+        height: 550px; /* Set a fixed height for the scrollable div */
+        overflow-y: auto; /* Enable vertical scrolling if content exceeds the height */
+        overflow-x: hidden; /* Hide horizontal scrollbar */
+    }
+</style>
+{% endblock %}
 
 {% block content%}
 
+<div>
+    {% for single_group in groups %}
+      <a href="{% url 'community' group=single_group %}">{{ single_group }}</a>
+    {% endfor %}
+    <form class="form-inline my-2 my-lg-0 d-inline" action="{% url 'community' group='create_group' %}" method="post">
+      {% csrf_token %}
+      <input type="text" name="new_group_name" placeholder="enter new group name">
+      <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Create Group</button>
+    </form>
+  </div>
 
+  <div class="scrollable-div" id="scrollableDiv">
+    {% for message in messages %}
+      <ul>
+        <li>{{ message.message }}</li>
+        <li>{{ message.time }}</li>
+        {% if message.author == None %}
+          <li>Deleted User</li>
+        {% else %}
+          <li>{{ message.author }}</li>
+        {% endif %}
+      </ul>
+    {% endfor %}
+  </div>
+
+  <div class="row fixed-bottom bg-light p-2">
+    <div class="col">
+      <form id="messageForm" action="{% url 'community' group=current_group %}" method="post">
+        {% csrf_token %}
+        <div class="d-flex">
+          <input type="text" name="message" class="form-control flex-grow-1 mr-2" placeholder="Enter your text here" autofocus>
+          <button type="submit" class="btn btn-primary">Send</button>  
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Scroll to the bottom of the scrollable div
+    function scrollToBottom() {
+      var scrollableDiv = document.getElementById("scrollableDiv");
+      scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+    }
+
+    // Scroll to bottom on page load
+    window.onload = scrollToBottom;
+
+    // Scroll to bottom when new message is added
+    document.getElementById("messageForm").addEventListener("submit", function() {
+      scrollToBottom();
+    });
+  </script>
 
 {% endblock %}
