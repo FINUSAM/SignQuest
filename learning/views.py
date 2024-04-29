@@ -4,6 +4,7 @@ import random
 from django.shortcuts import render, redirect
 from django.apps import apps
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 UserStatsModel = apps.get_model('account', 'UserStatsModel')
 MalayalamAlphabetModel = apps.get_model('home', 'MalayalamAlphabetModel')
@@ -13,6 +14,7 @@ previous_submission_time = None
 
 # Create your views here.
 
+@login_required
 def learning(request):
     all_alphabets = MalayalamAlphabetModel.objects.all()
     alphabets_eng = [alphabet.eng for alphabet in all_alphabets]
@@ -48,6 +50,7 @@ def learning(request):
 
     return render(request, 'learning/learning.html', data)
 
+@login_required
 def answer(request):
     try:
         answer = previous_selected_question.mal
@@ -84,7 +87,6 @@ def getRandomOptions(all_alphabets, current_selected_question):
     random.shuffle(selected_options)
     #selected_options = [option.answer for option in selected_options]
     return selected_options
-
 
 def change_confidence_level(user, correct_answer, selected_answer, alphabets_eng, time_taken, is_answer_shown):
     if selected_answer == correct_answer:
