@@ -1,0 +1,13 @@
+{% extends 'home/base.html' %}
+
+{% block title %} Flashcard Page {% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block content%}
+
+{% for level in total_levels %}
+    <a href="{% url 'flashcard' level=level %}">Level {{ level }}</a>
+{% endfor %}
+
+{% endblock %}

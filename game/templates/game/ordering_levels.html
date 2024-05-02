@@ -1,0 +1,20 @@
+{% extends 'home/base.html' %}
+
+{% block title %} Ordering Page {% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block content%}
+
+{% for level in total_levels %}
+    {% if level == 1 %}
+        <a href="{% url 'ordering_alphabet' %}"> Level {{ level }}</a>
+    {% elif level == 2 %}
+        <a href="{% url 'ordering_image' %}"> Level {{ level }}</a>
+    {% else %}
+        <a href="{% url 'ordering' %}"> Level {{ level }}</a>
+    {% endif %}
+{% endfor %}
+
+
+{% endblock %}

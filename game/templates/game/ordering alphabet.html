@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alphabet Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #game-board {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .tile {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Alphabet Game</h1>
+    <p>Arrange the alphabets in correct order:</p>
+    <div id="game-board"></div>
+    <script>
+
+        var alphabet_string = "{{ alphabet_list }}";
+        alphabet_string = alphabet_string.replace(/&#x27;/g, "'");
+
+        const alphabet_original = JSON.parse(alphabet_string.replace(/'/g, '"'));
+        const alphabet = JSON.parse(alphabet_string.replace(/'/g, '"'));
+
+        const shuffledAlphabet = alphabet.slice().sort(() => Math.random() - 0.5);
+        const gameBoard = document.getElementById('game-board');
+
+        shuffledAlphabet.forEach(letter => {
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            tile.textContent = letter;
+            tile.setAttribute('draggable', true);
+
+            tile.addEventListener('dragstart', dragStart);
+            tile.addEventListener('dragover', dragOver);
+            tile.addEventListener('drop', drop);
+
+            gameBoard.appendChild(tile);
+        });
+
+        let draggedTile = null;
+
+        function dragStart(event) {
+            draggedTile = event.target;
+            event.dataTransfer.setData('text/plain', event.target.textContent);
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const droppedData = event.dataTransfer.getData('text/plain');
+            const droppedTile = event.target;
+
+            if (droppedTile.classList.contains('tile')) {
+                const temp = droppedTile.textContent;
+                droppedTile.textContent = droppedData;
+                draggedTile.textContent = temp;
+            }
+
+            checkIfOrdered();
+        }
+
+        function arraysEqual(a1, a2) {
+            /* WARNING: arrays must not contain {objects} or behavior may be undefined */
+            return JSON.stringify(a1) == JSON.stringify(a2);
+        }
+
+        function checkIfOrdered() {
+            const tiles = document.querySelectorAll('.tile');
+            let currentOrder = [];
+
+            tiles.forEach(tile => {
+                currentOrder.push(tile.textContent);
+            });
+
+            if (arraysEqual(currentOrder, alphabet)) {
+                alert('Congratulations! You arranged the alphabets correctly!');
+            }
+        }
+    </script>
+</body>
+
+</html>

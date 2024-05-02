@@ -6,6 +6,9 @@
 
 {% block content%}
 
+{% for game in games %}
+    <a href="{{ game }}">{{ game }}</a>
+{% endfor %}
 
 
 {% endblock %}
