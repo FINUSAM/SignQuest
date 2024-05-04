@@ -10,5 +10,6 @@ urlpatterns = [
     path('ordering/image/', views.ordering_image, name='ordering_image'),
     path('quiz/', views.quiz_levels, name='quiz_levels'),
     path('quiz/normal/<int:level>', views.quiz_normal, name='quiz_normal'),
-    path('quiz/ai', views.quiz_ai, name='quiz_ai'),
+    path('quiz/ai', views.quiz_ai_main, name='quiz_ai_main'),
+    path('quiz/ai/predictor', views.quiz_ai, name='quiz_ai'),
 ]

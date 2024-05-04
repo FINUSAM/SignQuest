@@ -1,0 +1,141 @@
+{% extends 'home/base.html' %}
+
+{% block title %} AI Page {% endblock %}
+
+{% block css %}
+<style>
+    #canvas {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        margin: 20px;
+        width: 150px;
+        height: 100px;
+    }
+    .alert {
+        padding-right: 20px;
+        /* Set right padding to 0 */
+    }
+    #question{
+        margin-top: 50px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content%}
+<div id="alert-container" style="position: fixed; top: 30px; left: 45%;"></div>
+<h1 id="question"></h1>
+<video id="videoElement" hidden></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            var video = document.getElementById('videoElement');
+            video.srcObject = stream;
+            video.play();
+            //sendData();
+            get_question();
+        })
+        .catch(function (err) {
+            console.error('Error accessing camera: ', err);
+        });
+
+    intervalId = setInterval(sendData, 3000); // Start sending every 3 seconds
+
+    function sendData() {
+        var video = document.getElementById('videoElement');
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        var imageDataURI = canvas.toDataURL('image/jpeg');
+
+        postData('{% url "quiz_ai" %}', { 'imageData': imageDataURI }).then(response => {
+            response.json().then(data => {
+                console.log('response: ' + data.message);
+                if (data.message == "CORRECT") {
+                    //clearInterval(intervalId); // Stop sending if the response is "CORRECT"
+                    get_question();
+                    //window.location.href = "{% url 'quiz_ai' %}";
+                    //sendData();
+                    show_alert(data);
+                } else {
+                    //sendData();
+                    show_alert(data);
+                }
+            });
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
+    function get_question() {
+        fetch('{% url "quiz_ai" %}')
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // Assuming the response is text, adjust accordingly if it's JSON or HTML
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            })
+            .then(data => {
+                document.getElementById('question').innerHTML = JSON.parse(data).question;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function getCookie(name) {
+        //'X-CSRFToken': getCookie('csrftoken')
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Check if the cookie contains the specified name
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    // Extract and decode the cookie value
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function postData(url, jsonData) {
+        const response = fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify(jsonData),
+        });
+        return response;
+    }
+
+    function show_alert(data) {
+        var alertContainer = document.getElementById('alert-container');
+
+        // Create a new div element for the alert message
+        var newAlert = document.createElement('div');
+        newAlert.className = 'alert alert-info alert-dismissible fade show';
+        newAlert.setAttribute('role', 'alert');
+        newAlert.innerHTML = data.message;
+
+        // Append the new alert to the alert container
+        alertContainer.appendChild(newAlert);
+
+        // Automatically close the alert after 3 seconds
+        setTimeout(function () {
+            newAlert.classList.add('fade');
+            setTimeout(function () {
+                alertContainer.removeChild(newAlert);
+            }, 1000);
+        }, 1000);
+    }
+</script>
+{% endblock %}
