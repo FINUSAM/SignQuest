@@ -19,6 +19,7 @@ def learning(request):
     all_alphabets = MalayalamAlphabetModel.objects.all()
     alphabets_eng = [alphabet.eng for alphabet in all_alphabets]
     
+    
     if request.method == 'POST':
         time_taken = datetime.now() - previous_submission_time
         selected_answer = request.POST.get('selected-answer')
@@ -34,7 +35,7 @@ def learning(request):
     learning_counter = UserStatsModel.objects.get(user=request.user).learning_counter
 
     confidence_color_levels_and_letters = []
-    confidence_color_levels_only = [(1 - x)+0.05 if x != 0 else x+0.05 for x in weights]
+    confidence_color_levels_only = [((1 - x)+0.05)*0.7 if x != 0 else x+0.05 for x in weights]
 
     for index,letter in enumerate(alphabets_eng):
         if index>=learning_counter:
@@ -107,10 +108,10 @@ def change_confidence_level(user, correct_answer, selected_answer, alphabets_eng
     new_confidence_level = min(1, existing_confidence_level * correctness)
     if new_confidence_level<0.3 and existing_confidence_level>=0.3:
         try:
-            alphabet_counter = getattr(user_confidence, 'alphabet_counter')
+            alphabet_counter = getattr(user_confidence, 'learning_counter')
             setattr(user_confidence, alphabets_eng[alphabet_counter], 1)
-            alphabet_counter+=1
-            setattr(user_confidence, 'alphabet_counter', alphabet_counter)
+            alphabet_counter+=2
+            setattr(user_confidence, 'learning_counter', alphabet_counter)
         except:
             pass
     setattr(user_confidence, correct_answer, new_confidence_level)
