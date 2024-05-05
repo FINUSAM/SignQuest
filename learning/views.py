@@ -110,6 +110,7 @@ def change_confidence_level(user, correct_answer, selected_answer, alphabets_eng
         try:
             alphabet_counter = getattr(user_confidence, 'learning_counter')
             setattr(user_confidence, alphabets_eng[alphabet_counter], 1)
+            setattr(user_confidence, alphabets_eng[alphabet_counter+1], 1)
             alphabet_counter+=2
             setattr(user_confidence, 'learning_counter', alphabet_counter)
         except:
