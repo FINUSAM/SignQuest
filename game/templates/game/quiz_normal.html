@@ -30,6 +30,7 @@
     {% endif %}
 </div>
 
+
 {% if '/normal/2' in request.path %}
 <h3> {{ question }} </h3>
 {% endif %}
@@ -41,7 +42,7 @@
 
     {% for option in options %}
     {% if '/normal/2' in request.path %}
-    <form action="{% url 'quiz_normal' level='1' %}" method="post">
+    <form action="{% url 'quiz_normal' level='2' %}" method="post">
         {% csrf_token %}
         <button type="submit"><img src="{{ option.image }}"></button>
         <input type="hidden" name="selected-answer" value="{{ option.eng }}">
@@ -49,7 +50,7 @@
     {% endif %}
 
     {% if '/normal/1' in request.path %}
-    <form action="{% url 'quiz_normal' level='2' %}" method="post">
+    <form action="{% url 'quiz_normal' level='1' %}" method="post">
         {% csrf_token %}
         <input type="submit" value="{{ option.mal }}">
         <input type="hidden" name="selected-answer" value="{{ option.eng }}">
@@ -58,5 +59,16 @@
     {% endfor %}
 
 </div>
+
+<div>Current Score : {{ currentscore }}</div>
+<div>High Score : {{ highscore }}</div>
+
+{% if finish %}
+<script>
+    setTimeout(() => {
+        window.location.href = '{% url "quiz_levels" %}';
+    }, 2000);
+</script>
+{% endif %}
 
 {% endblock %}
