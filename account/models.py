@@ -21,6 +21,18 @@ class UserStatsModel(models.Model):
     au = models.FloatField(default=0)
     am = models.FloatField(default=0)
     ah = models.FloatField(default=0)
+    flashcard_allowed_levels = models.IntegerField(default=1)
+    flashcard_1 = models.IntegerField(default=0)
+    flashcard_2 = models.IntegerField(default=0)
+    flashcard_3 = models.IntegerField(default=0)
+    flashcard_4 = models.IntegerField(default=0)
+    flashcard_5 = models.IntegerField(default=0)
+    flashcard_6 = models.IntegerField(default=0)
+    flashcard_7 = models.IntegerField(default=0)
+    ordering_alphabet = models.IntegerField(default=0)
+    ordering_image = models.IntegerField(default=0)
+    quiz_1 = models.IntegerField(default=0)
+    quiz_2 = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username}"
