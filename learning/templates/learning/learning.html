@@ -10,22 +10,40 @@
         font-size: xx-large;
         text-align: center;
         border: 2px solid black;
-        bottom: 10px; /* Adjust as needed */
+        bottom: 10px;
+        /* Adjust as needed */
         left: 40%;
-        animation: slideIn 0.1s forwards; /* Animation duration: 0.5 seconds */
+        animation: slideIn 0.1s forwards;
+        /* Animation duration: 0.5 seconds */
     }
+
+
+    #question_image>img {
+        height: 200px;
+        width: auto;
+    }
+
+
+    form>input {
+        font-size: 40px;
+    }
+
 
     @keyframes slideIn {
         from {
-            bottom: -100px; /* Start position below the screen */
+            bottom: -100px;
+            /* Start position below the screen */
         }
+
         to {
-            bottom: 20px; /* End position 20px above the bottom of the screen */
+            bottom: 20px;
+            /* End position 20px above the bottom of the screen */
         }
     }
 
     .alert {
-        padding-right: 20px; /* Set right padding to 0 */
+        padding-right: 20px;
+        /* Set right padding to 0 */
     }
 </style>
 {% endblock %}
@@ -34,38 +52,49 @@
 
 <div id="alert-container" style="position: fixed; top: 30px; left: 45%;">
     {% if messages %}
-        {% for message in messages %}
-            <div id="alert-{{ forloop.counter }}" class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-            </div>
-            <script>
-                // Automatically close the alert after 1 second if not manually closed
-                setTimeout(function() {
-                    $("#alert-{{ forloop.counter }}").alert('close');
-                }, 1000);
-            </script>
-        {% endfor %}
+    {% for message in messages %}
+    <div id="alert-{{ forloop.counter }}" class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert">
+        {{ message }}
+    </div>
+    <script>
+        // Automatically close the alert after 1 second if not manually closed
+        setTimeout(function () {
+            $("#alert-{{ forloop.counter }}").alert('close');
+        }, 1000);
+    </script>
+    {% endfor %}
     {% endif %}
 </div>
 
-<div> <img src="{{ question }}"> </div>
+<div id="question_image" style="text-align: center; margin: 20px 0px;"> <img src="{{ question }}" style="border: 2px solid black;"> </div>
 
-<div> 
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-2"></div>
     {% for option in options %}
-        <form action="{% url 'learning' %}" method="post">
+    <div class="col-1">
+        <form action="{% url 'learning' %}" style="text-align: center;" method="post">
             {% csrf_token %}
             <input type="submit" value="{{ option.mal }}">
             <input type="hidden" name="selected-answer" value="{{ option.eng }}">
             <input type="hidden" name="is-answer-shown" value="False">
         </form>
+    </div>
     {% endfor %}
+    <div class="col-2"></div>
+    <div class="col-2"></div>
 </div>
 
-<button id="showAnswerBtn">Show Answer</button>
+<div class="d-flex justify-content-center mt-5">
+    <button id="showAnswerBtn">Show Answer</button>
+</div>
 
-<div style="margin: 20px 0px;">
+<div class="row" style="margin: 40px 20px;">
     {% for i in confidence_color_level %}
-        <span style="background-color: rgba(0, 255, 0, {{ i.1 }}); padding: 5px 10px; border-radius: 0%; margin: 5px;">{{ i.0 }}</span>
+    <div class="col-auto" style="background-color: rgba(0, 255, 0, {{ i.1 }}); margin:5px 10px;">
+        <p style="margin: 0px;">{{ i.0 }}</p>
+    </div>
     {% endfor %}
 </div>
 
@@ -76,27 +105,27 @@
 </div>
 
 <script>
-    document.getElementById('showAnswerBtn').addEventListener('click', function() {
-        document.querySelectorAll('input[name="is-answer-shown"]').forEach(function(input) {
+    document.getElementById('showAnswerBtn').addEventListener('click', function () {
+        document.querySelectorAll('input[name="is-answer-shown"]').forEach(function (input) {
             input.value = 'True';
         });
 
         fetch('{% url "get_answer" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(answer => {
-                    document.getElementById('answerPlaceholderText').innerText = answer;
-                    document.getElementById('answerPlaceholder').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error fetching answer:', error);
-                });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(answer => {
+                document.getElementById('answerPlaceholderText').innerText = answer;
+                document.getElementById('answerPlaceholder').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching answer:', error);
+            });
 
-        
+
     });
 </script>
 

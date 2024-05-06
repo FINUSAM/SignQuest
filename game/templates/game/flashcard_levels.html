@@ -1,13 +1,52 @@
 {% extends 'home/base.html' %}
 
-{% block title %} Flashcard Page {% endblock %}
+{% block title %} Game Levels {% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
 
-{% block content%}
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-{% for level in total_levels %}
-    <a href="{% url 'flashcard' level=level %}">Level {{ level }}</a>
-{% endfor %}
+    h1 {
+        text-align: center;
+        color: #333;
+    }
 
+    .level {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .level:last-child {
+        border-bottom: none;
+    }
+
+    .level span {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Game Levels</h1>
+    {% for level in total_levels %}
+    <div class="level" align="center">
+        <a href="{% url 'flashcard' level=level %}"><span>Level {{ level }}</span></a>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

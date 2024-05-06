@@ -25,9 +25,14 @@
 
 {% block content%}
 <div id="alert-container" style="position: fixed; top: 30px; left: 45%;"></div>
-<h1 id="question"></h1>
+<h1 style="margin: 200px;" id="question"></h1>
 <video id="videoElement" hidden></video>
 <canvas id="canvas"></canvas>
+
+<div style="position: fixed; top: 50px; right: 10px; padding: 20px;">
+    <div>Current Score : 0</div>
+    <div>High Score : 0</div>
+</div>
 
 <script>
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -134,8 +139,8 @@
             newAlert.classList.add('fade');
             setTimeout(function () {
                 alertContainer.removeChild(newAlert);
-            }, 1000);
-        }, 1000);
+            }, 400);
+        }, 400);
     }
 </script>
 {% endblock %}

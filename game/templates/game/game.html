@@ -1,14 +1,64 @@
 {% extends 'home/base.html' %}
 
-{% block title %} Game Page {% endblock %}
+{% block title %} Games {% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .games {
+        padding: 20px;
+        border-bottom: 1px solid #ccc;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+    }
+    .games:last-child {
+        border-bottom: none;
+    }
+    .games span {
+        font-weight: bold;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    .games:hover {
+        background-color: #f9f9f9;
+    }
+    .games:hover span {
+        color: #007bff; /* Change to your desired hover color */
+    }
+    /* Additional gamified styles */
+    .games:hover {
+        transform: scale(1.05); /* Scale up on hover */
+        box-shadow: 0 0 20px rgba(0,0,0,0.2); /* Add shadow on hover */
+    }
+</style>
+{% endblock %}
 
-{% block content%}
-
-{% for game in games %}
-    <a href="{{ game }}">{{ game }}</a>
-{% endfor %}
-
+{% block content %}
+<div class="container">
+    <div class="games" align="center">
+        <span><a href="flashcard/">Flash Card</a></span>
+    </div>
+    <div class="games" align="center">
+        <span><a href="ordering/">Alphabet Ordering</a></span>
+    </div>
+    <div class="games" align="center">
+        <span><a href="quiz/">Quiz</a></span>
+    </div>
+</div>
 
 {% endblock %}
+

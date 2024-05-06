@@ -1,14 +1,51 @@
 {% extends 'home/base.html' %}
 
-{% block title %} Quiz Page {% endblock %}
+{% block title %} Game Levels {% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    .level {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+    }
+    .level:last-child {
+        border-bottom: none;
+    }
+    .level span {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
 
 {% block content%}
-
-<a href="{% url 'quiz_normal' level=1 %}">Level 1</a>
-<a href="{% url 'quiz_normal' level=2 %}">Level 2</a>
-<a href="{% url 'quiz_ai_main' %}">Level 3</a>
-
-
+<div class="container">
+    <h1>Quiz Levels</h1>
+    <div class="level" align="center">
+        <a href="{% url 'quiz_normal' level=1 %}"><span>Level 1</span></a>
+    </div>
+    <div class="level" align="center">
+        <a href="{% url 'quiz_normal' level=2 %}"><span>Level 2</span></a>
+    </div>
+    <div class="level" align="center">
+        <a href="{% url 'quiz_ai_main' %}"><span>Level 3</span></a>
+    </div>
+</div>
 {% endblock %}

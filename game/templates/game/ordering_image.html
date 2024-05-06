@@ -32,6 +32,14 @@
         #check-order-btn {
             margin: 15px 0px;
         }
+
+        button#move-left,
+        button#move-right,
+        button#check-order-btn {
+            font-size: 30px;
+            /* Adjust the font size as needed */
+            /* Add other styles here */
+        }
     </style>
 </head>
 
@@ -39,15 +47,17 @@
     <h1>Image Ordering Game</h1>
     <p>Click on an image to select it, then use the buttons to move it:</p>
     <div id="image-container"></div>
-    <div id="controls">
-        <button id="move-left" disabled>Left</button>
-        <button id="move-right" disabled>Right</button>
-        <button id="move-up" disabled>Up</button>
-        <button id="move-down" disabled>Down</button>
+    <div style="text-align: center;">
+        <div id="controls">
+            <button id="move-left" disabled>Left</button>
+            <button id="move-right" disabled>Right</button>
+        </div>
+        <button id="check-order-btn">Check Order</button>
     </div>
-    <button id="check-order-btn">Check Order</button>
-    <div id="highscoreDisplay">High Score : </div>
-    <div id="timer" style="margin-left: 10px;"></div> <!-- Timer display -->
+    <div style="position: fixed; top: 50px; right: 10px; padding: 20px;">
+        <div id="highscoreDisplay">High Score : </div>
+        <span id="timer" style="margin-left: 10px;"></span> <!-- Timer display -->
+    </div>
 
 
     <script>
@@ -120,7 +130,7 @@
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.className = 'image-box';
-                img.style.width = '100px'; // Set width to desired size
+                img.style.width = '90px'; // Set width to desired size
                 img.style.height = 'auto';
                 img.onclick = () => selectImage(img, index);
                 imageContainer.appendChild(img);
@@ -175,12 +185,6 @@
                     break;
                 case 'right':
                     newIndex = currentIndex + 1;
-                    break;
-                case 'up':
-                    newIndex = currentIndex - numCols;
-                    break;
-                case 'down':
-                    newIndex = currentIndex + numCols;
                     break;
                 default:
                     return;
@@ -265,8 +269,6 @@
         // Event listeners for control buttons
         document.getElementById('move-left').addEventListener('click', () => moveImage('left'));
         document.getElementById('move-right').addEventListener('click', () => moveImage('right'));
-        document.getElementById('move-up').addEventListener('click', () => moveImage('up'));
-        document.getElementById('move-down').addEventListener('click', () => moveImage('down'));
 
         renderImages();
     </script>

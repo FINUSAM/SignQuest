@@ -36,8 +36,10 @@
     <h1>Alphabet Game</h1>
     <p>Arrange the alphabets in correct order:</p>
     <div id="game-board"></div>
-    <div id="highscoreDisplay">High Score : </div>
-    <div id="timer" style="margin-left: 10px;"></div> <!-- Timer display -->
+    <div style="position: fixed; top: 50px; right: 10px; padding: 20px;">
+        <div id="highscoreDisplay">High Score : </div>
+        <span id="timer" style="margin-left: 10px;"></span> <!-- Timer display -->
+    </div>
     <script>
 
         var isTimerStarted = false
