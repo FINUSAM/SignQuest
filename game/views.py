@@ -13,7 +13,7 @@ previous_selected_question = None
 #variables required for ai
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
-#from keras.models import load_model
+from keras.models import load_model
 import numpy as np
 import cv2
 from django.core.files.base import ContentFile
@@ -22,7 +22,7 @@ import base64
 from django.http import JsonResponse
 
 image_size = 224
-#model = load_model("keras_model.keras")
+model = load_model("keras_model.keras")
 counter_for_ai = 0
 counter_for_quiz = 0
 score_for_quiz = 0
@@ -207,12 +207,14 @@ def quiz_ai(request):
                 image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, (image_size, image_size))
-                #pred = model.predict(np.array([image]))
-                #sign_code = np.argmax(pred[0])
-                sign_name = mapper('a')#sign_code)
+                pred = model.predict(np.array([image]))
+                sign_code = np.argmax(pred[0])
+                sign_name = mapper(sign_code)
 
                 correct_answer = previous_selected_question.eng
-                if sign_name == correct_answer or counter_for_ai > 5:
+                print(sign_name)
+                print(correct_answer)
+                if sign_name == correct_answer:# or counter_for_ai > 5:
                     reset_counter_for_ai()
                     result = 'CORRECT'
                     messages.success(request, result)

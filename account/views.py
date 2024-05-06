@@ -1,14 +1,19 @@
+from django.apps import apps
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from .models import UserStatsModel
 
 # Create your views here.
 @login_required
 def account(request):
-    return render(request, "account/account.html")
+    user_stats = UserStatsModel.objects.get(user=request.user)
+
+    data = {'user_stats' : user_stats}
+    return render(request, "account/account.html", data)
 
 def login_view(request):
     if request.method == 'POST':

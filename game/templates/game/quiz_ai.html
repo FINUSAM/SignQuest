@@ -42,7 +42,7 @@
             console.error('Error accessing camera: ', err);
         });
 
-    intervalId = setInterval(sendData, 3000); // Start sending every 3 seconds
+    intervalId = setInterval(sendData, 1000); // Start sending every 3 seconds
 
     function sendData() {
         var video = document.getElementById('videoElement');
