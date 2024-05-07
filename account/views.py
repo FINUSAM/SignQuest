@@ -7,8 +7,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import UserStatsModel
-import matplotlib.pyplot as plt
-from io import BytesIO
 
 # Create your views here.
 @login_required
