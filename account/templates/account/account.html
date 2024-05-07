@@ -1,20 +1,136 @@
 {% extends 'home/base.html' %}
 
-{% block title %} Account Page {% endblock %}
+{% block title %}Account Page{% endblock %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+    h5 {
+        margin: 0px;
+    }
 
-{% block content%}
+    #username_container {
+        width: 90%;
+        margin: 20px auto;
+    }
 
-<div>{{ user_stats.user }}</div>
-<div>{{ user_stats.flashcard_allowed_levels }}</div>
-<div>{{ user_stats.flashcard_1 }}</div>
-<div>{{ user_stats.flashcard_2 }}</div>
-<div>{{ user_stats.flashcard_3 }}</div>
-<div>{{ user_stats.flashcard_4 }}</div>
-<div>{{ user_stats.ordering_alphabet }}</div>
-<div>{{ user_stats.ordering_image }}</div>
-<div>{{ user_stats.quiz_1 }}</div>
-<div>{{ user_stats.quiz_2 }}</div>
+    #high_scores_chart_container,
+    #alphabet_confidence_chart_container {
+        width: 90%;
+        height: 400px;
+        margin: 20px auto; /* Center horizontally */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div id="username_container">
+    <h3>User Name: {{ user }}</h3>
+</div>
+
+<div id="high_scores_chart_container">
+    <canvas id="highScoresChart" style="width: 100%; height: 100%;"></canvas>
+</div>
+
+<div id="alphabet_confidence_chart_container">
+    <canvas id="myChart" style="width: 100%; height: 100%;"></canvas>
+</div>
+
+<script>
+    // High Scores Chart
+    var highScoresCtx = document.getElementById('highScoresChart').getContext('2d');
+    var f1, f2, f3, f4, o1, o2, q1, q2;
+
+    if ({{ user_stats.flashcard_1 }} !== 0) {
+        f1 = 100 - ({{ user_stats.flashcard_1 }} / 250);
+    } else {
+        f1 = 0;
+    }
+
+    if ({{ user_stats.flashcard_2 }} !== 0) {
+        f2 = 100 - ({{ user_stats.flashcard_2 }} / 500);
+    } else {
+        f2 = 0;
+    }
+
+    if ({{ user_stats.flashcard_3 }} !== 0) {
+        f3 = 100 - ({{ user_stats.flashcard_3 }} / 1000);
+    } else {
+        f3 = 0;
+    }
+
+    if ({{ user_stats.flashcard_4 }} !== 0) {
+        f4 = 100 - ({{ user_stats.flashcard_4 }} / 2000);
+    } else {
+        f4 = 0;
+    }
+
+    if ({{ user_stats.ordering_alphabet }} !== 0) {
+        o1 = 100 - ({{ user_stats.ordering_alphabet }} / 2000);
+    } else {
+        o1 = 0;
+    }
+
+    if ({{ user_stats.ordering_image }} !== 0) {
+        o2 = 100 - ({{ user_stats.ordering_image }} / 4000);
+    } else {
+        o2 = 0;
+    }
+
+    q1 = {{ user_stats.quiz_1 }} !== 0 ? {{ user_stats.quiz_1 }} * 5 : 0;
+    q2 = {{ user_stats.quiz_2 }} !== 0 ? {{ user_stats.quiz_2 }} * 5 : 0;
+
+
+    var highScoresData = {
+        labels: [
+            "Flashcard 1", "Flashcard 2", "Flashcard 3", 
+            "Flashcard 4", //"Flashcard 5", "Flashcard 6", "Flashcard 7", 
+            "Ordering Alphabet", "Ordering Image", 
+            "Quiz 1", "Quiz 2"
+        ],
+        datasets: [{
+            label: 'High Scores',
+            data: [
+                f1, f2, 
+                f3, f4, 
+                //{{ user_stats.flashcard_5 }}, {{ user_stats.flashcard_6 }}, {{ user_stats.flashcard_7 }}, 
+                o1, o2, 
+                q1, q2
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Adjust the color as needed
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    var highScoresChart = new Chart(highScoresCtx, {
+        type: 'bar',
+        data: highScoresData,
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+    // Existing Alphabet Confidence Chart (You may keep your existing chart code here)
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chartData = JSON.parse("{{ alphabet_confidence_chart|escapejs }}");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'User Alphabet Confidence',
+                data: chartData.data,
+            }]
+        }
+    });
+</script>
+
 
 {% endblock %}
