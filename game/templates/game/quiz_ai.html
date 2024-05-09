@@ -30,11 +30,13 @@
 <canvas id="canvas"></canvas>
 
 <div style="position: fixed; top: 50px; right: 10px; padding: 20px;">
-    <div>Current Score : 0</div>
+    <div id="currentscore">Current Score : 0</div>
     <div>High Score : 0</div>
 </div>
 
 <script>
+currentscore = 0
+
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(function (stream) {
             var video = document.getElementById('videoElement');
@@ -47,6 +49,7 @@
             console.error('Error accessing camera: ', err);
         });
 
+        
     intervalId = setInterval(sendData, 1000); // Start sending every 3 seconds
 
     function sendData() {
@@ -61,13 +64,15 @@
                 console.log('response: ' + data.message);
                 if (data.message == "CORRECT") {
                     //clearInterval(intervalId); // Stop sending if the response is "CORRECT"
+                    var currentscore_container = document.getElementById('currentscore');
+                    currentscore_container.innerHTML = 'Current Score : ' + currentscore;
                     get_question();
                     //window.location.href = "{% url 'quiz_ai' %}";
                     //sendData();
                     show_alert(data);
                 } else {
                     //sendData();
-                    show_alert(data);
+                    //show_alert(data);
                 }
             });
         }).catch(error => {

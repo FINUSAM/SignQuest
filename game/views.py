@@ -1,6 +1,10 @@
 import json
+import pickle
 import time
 import random
+import mediapipe as mp
+import warnings
+warnings.filterwarnings("ignore")
 from django.apps import apps
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -13,7 +17,7 @@ previous_selected_question = None
 #variables required for ai
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
-from keras.models import load_model
+#from keras.models import load_model
 import numpy as np
 import cv2
 from django.core.files.base import ContentFile
@@ -21,8 +25,12 @@ import uuid
 import base64
 from django.http import JsonResponse
 
+model_dict = pickle.load(open('./model.p', 'rb'))
+model = model_dict['model']
+mp_hands = mp.solutions.hands
+
 image_size = 224
-model = load_model("keras_model.keras")
+#model = load_model("keras_model.keras")
 counter_for_ai = 0
 counter_for_quiz = 0
 score_for_quiz = 0
@@ -193,7 +201,11 @@ def quiz_ai_main(request):
 def quiz_ai(request):
     if request.method == "GET":
         all_alphabets = MalayalamAlphabetModel.objects.all()
-        current_selected_question = selectRandomQuestion(all_alphabets)
+        while True:
+            only_allowed_questions = ['a', 'aa', 'ai', 'au', 'e', 'ha', 'i', 'ii', 'la', 'na', 'o', 'pa', 'r']
+            current_selected_question = selectRandomQuestion(all_alphabets)
+            if current_selected_question.eng in only_allowed_questions:
+                break
         return JsonResponse({'question': current_selected_question.mal})
     elif request.method == "POST":
         if request.content_type == 'application/json':
@@ -203,14 +215,10 @@ def quiz_ai(request):
                 image_data_uri = json_data.get('imageData')
                 encoded_image_data = image_data_uri.split(',')[1]
                 decoded_image_data = base64.b64decode(encoded_image_data)
-                nparr = np.frombuffer(decoded_image_data, np.uint8)
-                image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                image = cv2.resize(image, (image_size, image_size))
-                pred = model.predict(np.array([image]))
-                sign_code = np.argmax(pred[0])
-                sign_name = mapper(sign_code)
-
+                
+                #sign_name = detection_full_image(decoded_image_data)
+                sign_name = detection_landmarks(decoded_image_data)
+                
                 correct_answer = previous_selected_question.eng
                 print(sign_name)
                 print(correct_answer)
@@ -231,6 +239,56 @@ def quiz_ai(request):
 
 
 ## Required Functions
+
+def detection_landmarks(decoded_image_data):
+    data_aux = []
+    x_ = []
+    y_ = []
+    
+    # Convert raw image bytes to numpy array
+    nparr = np.frombuffer(decoded_image_data, np.uint8)
+    
+    # Decode the image
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    H, W, _ = frame.shape
+
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3, max_num_hands=1)
+    results = hands.process(frame_rgb)
+
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            for i in range(len(hand_landmarks.landmark)):
+                x = hand_landmarks.landmark[i].x
+                y = hand_landmarks.landmark[i].y
+
+                x_.append(x)
+                y_.append(y)
+
+            for i in range(len(hand_landmarks.landmark)):
+                x = hand_landmarks.landmark[i].x
+                y = hand_landmarks.landmark[i].y
+                data_aux.append(x - min(x_))
+                data_aux.append(y - min(y_))
+
+        prediction = model.predict([np.asarray(data_aux)])
+        predicted_character = prediction[0]
+        return predicted_character
+
+    else:
+        return None
+
+def detection_full_image(decoded_image_data):
+    nparr = np.frombuffer(decoded_image_data, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, (image_size, image_size))
+    pred = model.predict(np.array([image]))
+    sign_code = np.argmax(pred[0])
+    sign_name = mapper(sign_code)
+    return sign_name
 
 def increment_counter_for_ai():
     global counter_for_ai
